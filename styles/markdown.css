@@ -1,0 +1,41 @@
+.markdown {
+  color: white;
+  line-height: 1.6;
+  background-color: #b473f689; /* optioneel: mooie paarse achtergrond */
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+.markdown h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.markdown h2 {
+  font-size: 1.4rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.markdown p {
+  margin-bottom: 0.8rem;
+}
+
+.markdown ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+
+.markdown li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown strong {
+  font-weight: 700;
+}
+
+.markdown em {
+  font-style: italic;
+}
