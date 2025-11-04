@@ -12,7 +12,7 @@ export async function POST(req) {
   const rawBody = await req.text();
   const headersList = await headers()
 
-  const endpointSecret = process.env.TEST_SECRET_WEBHOOK_KEY;
+  const endpointSecret = process.env.LIVE_SECRET_WEBHOOK_KEY;
   const signature = headersList.get('stripe-signature')
 
   try {
@@ -46,8 +46,8 @@ export async function POST(req) {
 
     return new NextResponse('ok', {status: 200});
   } catch (err) {
-    console.log(`⚠️  Webhook signature verification failed.`, err.message);
-    return  NextResponse.json({error: err.message});
+    console.error(`⚠️  Webhook signature verification failed.`, err.message);
+    return NextResponse.json({error: err.message});
   }
 }
 
