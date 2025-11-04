@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/database/prisma/prisma';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_TEST_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 
 
