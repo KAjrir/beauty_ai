@@ -20,9 +20,11 @@ const MessageContainer = ({messages, result, isLoading, messageRef}) => {
   return (
     <>
     {messages.length < 2  && 
-        <div>
-            <h1 className="text-5xl text-white font-bold">Beauty AI</h1>
-            <h2 className="text-2xl text-gray-200">Your Beauty Questions, Solved</h2>
+        <div className="h-[100%] grid items-center">
+            <div>
+                <h1 className="text-5xl text-white font-bold">Beauty AI</h1>
+                <h2 className="text-2xl text-gray-200">Your Beauty Questions, Solved</h2>
+            </div>
         </div>
     }
 
