@@ -12,7 +12,7 @@ export async function POST(req) {
   const rawBody = await req.text();
   const headersList = await headers()
 
-  const endpointSecret = process.env.SECRET_WEBHOOK_KEY;
+  const endpointSecret = process.env.TEST_SECRET_WEBHOOK_KEY;
   const signature = headersList.get('stripe-signature')
 
   try {
