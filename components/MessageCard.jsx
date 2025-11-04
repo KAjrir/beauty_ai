@@ -8,7 +8,7 @@ const MessageCard = ( { message } ) => {
     <>
         {message.role === "assistant" && 
         
-            <div className="markdown w-[80%]">
+            <div className="markdown max-sm:w-[100%] w-[80%]">
                 <ReactMarkdown>{message.content}</ReactMarkdown>
             </div>
         }

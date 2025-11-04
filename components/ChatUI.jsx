@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import AcceptPrompt from "./AcceptPrompt";
 import MessageContainer from "./MessageContainer";
 import ReactMarkdown from 'react-markdown';
@@ -52,6 +52,8 @@ const ChatUI = ({session}) => {
     const [isLoading, setIsLoading] = useState(false)
     const [messages, setMessages] = useState([{ id: id, role: 'system', content: `${instructions} ${systemInstructions}`}])
     const [result, setResult] = useState('');
+    const messageRef = useRef(null)
+
       
       const handleSend = async (data) => {
           const updatedMessages = [...messages, { id: ++id, role: 'user', content: data }];
@@ -110,7 +112,7 @@ const ChatUI = ({session}) => {
 
             setResult((prev) => prev + chunk);
           }
-
+          if(messageRef.current) messageRef.current.style.height = 0 + "px";
           const [_, wholeText] = finalResult.split('[END]');
           setMessages(prev => [...prev, { id: id++, role: 'assistant', content: wholeText?.trim()}])
 
@@ -118,15 +120,16 @@ const ChatUI = ({session}) => {
 
   return (
     
-    <main className=" relative mb-30 mt-15 flex flex-col flex-grow justify-center items-center">
+    <main className="h-[100svh] flex flex-col justify-center items-center">
       
       <MessageContainer
         messages={messages}
         result={result}
         isLoading={isLoading}
+        messageRef={messageRef}
       />
 
-      {error && <p>fix subscription dan mag je meer vragen stellen</p>}
+      {error && <p>Sluit een abonnement af om meer vragen te stellen</p>}
       <AcceptPrompt
         handleSend={handleSend}
       />

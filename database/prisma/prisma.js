@@ -9,7 +9,10 @@ const adapter = new PrismaNeon({ connectionString })
 
 
 if (!global.prisma) {
-  global.prisma = new PrismaClient({ adapter, log: ['query', 'info', 'warn', 'error'],})
+  global.prisma = new PrismaClient({ 
+    adapter, 
+    // log: ['query', 'info', 'warn', 'error']
+  })
 }
 prisma = global.prisma;
 

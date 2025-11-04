@@ -15,7 +15,7 @@ export default function Header ({ user, plans }) {
   
 
   return (
-    <header className="fixed top-0 right-0 left-0 z-50 flex justify-between items-center px-5 py-4">
+    <header className="flex fixed w-full bg-purple-900 justify-between items-center px-5 py-4">
         <Link href="/">
           <Image
             src='/logo-4.jpeg'

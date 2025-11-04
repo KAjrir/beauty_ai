@@ -87,7 +87,6 @@ export async function POST (req) {
 
     const body = await req.json()
     const { messages } = body
-    // console.log("Messages: ", JSON.stringify(messages, null, 2))
 
     const messagesWithoutWhiteId = messages.map(message => {
         return {role: message.role, content: message.content}

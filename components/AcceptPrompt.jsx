@@ -48,7 +48,7 @@ const AcceptPrompt = ({handleSend}) => {
 
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="prompt-text-area fixed bottom-8">
+    <form onSubmit={handleSubmit(onSubmit)} className="prompt-text-area fixed bottom-6 bg-purple-800">
         <Textarea 
           className="scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-blue-100 w-full overflow-y-auto resize-none"
           defaultValue=""

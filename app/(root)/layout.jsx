@@ -8,10 +8,15 @@ const Layout = async ({ children }) => {
   const plans = await getPlans()
 
   return (
-    <>
-        <Header plans={plans} user={user}/>
-        {children}
-    </>   
+    <main className='flex'>
+        <div className='flex-3'>
+          <Header 
+            plans={plans}
+            user={user}
+          />
+          {children}
+        </div>
+    </main>   
   );
 }
 
