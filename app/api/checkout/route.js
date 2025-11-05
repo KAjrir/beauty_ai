@@ -10,6 +10,7 @@ const YOUR_DOMAIN = process.env.DOMAIN_NAME;
 
 export async function POST (req) {
     const { planName } = await req.json()
+    console.log(planName)
 
     const session = await auth();
     if(!session) return NextResponse.json({url: `${YOUR_DOMAIN}/sign-in`, error: "No user detected"})
@@ -22,8 +23,10 @@ export async function POST (req) {
         lookup_keys: [planName],
         expand: ['data.product'],
     });
+    console.log(prices)
 
     const stripeSession = await stripe.checkout.sessions.create({
+        mode: 'subscription',
         billing_address_collection: 'auto',
         line_items: [
             {
@@ -37,10 +40,11 @@ export async function POST (req) {
             userId: session?.user?.id,
             planId: plan.id
         },  
-        mode: 'subscription',
         success_url: `${YOUR_DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${YOUR_DOMAIN}/cancel`,
     });
+    console.log(stripeSession)
+
 
     return NextResponse.json({url: stripeSession.url});
 

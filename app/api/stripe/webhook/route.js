@@ -16,31 +16,23 @@ export async function POST(req) {
   const signature = headersList.get('stripe-signature')
 
   try {
-    const event = stripe.webhooks.constructEvent(rawBody,signature, endpointSecret);
+    const event = stripe.webhooks.constructEvent(rawBody, signature, endpointSecret);
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
       const userId = session.metadata?.userId
       const planId = session.metadata?.planId
+      console.log("SESSION: ", session)
+      console.log("UserId: ", userId)
+      console.log("PlanId: ", planId)
 
       if (!planId) {
         console.error('Plan not found for Stripe price:');
         return new NextResponse('Plan not found', { status: 404 });
       }
 
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          subscription: {
-            update: {
-              where: {
-                userId: userId,
-              },
-              data: {
-                planId: planId,
-              },
-            },
-          },
-        },
+      await prisma.subscription.update({
+        where: { userId: userId },
+        data: { planId: planId },
       });
     }
 

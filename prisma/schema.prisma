@@ -32,9 +32,9 @@ model User {
 
 model Plan {
   id           String         @id @default(cuid())
-  name         String         @unique // bv. 'free', 'pro', 'premium'
-  price        Int // in centen, bv. 0, 1000, 2000
-  features     Json // of gebruik aparte tabel
+  name         String         @unique
+  price        Int
+  features     Json
   subscription Subscription[]
 }
 
