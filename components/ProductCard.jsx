@@ -31,7 +31,7 @@ export default function ProductCard({ plan, highlight }) {
             <h3 className={`text-xl font-bold ${highlight ? 'text-purple-600' : 'text-gray-800'}`}>
                 {plan.name.split('').map(letter => plan.name[0] === letter ? letter.toUpperCase() : letter).join('')}
             </h3>
-            <p className="mt-2 text-3xl font-extrabold text-gray-900">${plan.price / 100}<span className="text-base font-medium text-gray-500"> /month</span></p>
+            <p className="mt-2 text-3xl font-extrabold text-gray-900">€{plan.price / 100}<span className="text-base font-medium text-gray-500"> /month</span></p>
 
             <ul className="my-4 space-y-2 text-sm text-gray-700">
                 {Object.entries(plan.features).map(([feature, func]) => {

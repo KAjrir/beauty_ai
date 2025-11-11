@@ -2,9 +2,7 @@
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/database/prisma/prisma';
-import Stripe from 'stripe';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+import { stripe } from '@/lib/stripe';
 
 
 
@@ -30,9 +28,19 @@ export async function POST(req) {
         return new NextResponse('Plan not found', { status: 404 });
       }
 
-      await prisma.subscription.update({
-        where: { userId: userId },
-        data: { planId: planId },
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          subscription: {
+            update: {
+              where: { userId: userId },
+              data: { 
+                planId: planId,
+                stripeSubscriptionId: session.subscription
+              },
+            },
+          },
+        },
       });
     }
 

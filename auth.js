@@ -8,7 +8,6 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { v4 } from "uuid"
 import { compare } from "bcryptjs"
 
-
 const adapter = PrismaAdapter(prisma)
 
 const credits = Credentials({
@@ -42,7 +41,7 @@ const credits = Credentials({
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter,
-  debug: true,
+  debug: false,
   providers: [Google, credits],
   events: {
     async signIn ({user, account}) {
@@ -60,20 +59,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       })
 
-      if(!existingUser?.subscription ) {
-        await prisma.subscription.create({
-                data: {
-                  userId: user.id,
-                  planId: freeplan.id,
-                  endDate: new Date(),
-                }
-              });
-      }
     }
   },
   session: {
     strategy: 'database',
-    maxAge: 30 * 24 * 60 * 60
+    maxAge: 1 * 24 * 60 * 60
   },
   pages: {
     signIn: "/sign-in"
@@ -98,7 +88,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const createdSession = await adapter?.createSession?.({
           sessionToken: sessionToken,
           userId: params.token.sub,
-          expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+          expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
         })
 
         if (!createdSession) {
