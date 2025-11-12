@@ -8,15 +8,15 @@ const MessageCard = ( { message } ) => {
     <>
         {message.role === "assistant" && 
         
-            <div className="markdown max-sm:w-[100%] w-[80%]">
+            <div className="markdown max-sm:w-[90%] w-[80%]">
                 <ReactMarkdown>{message.content}</ReactMarkdown>
             </div>
         }
 
         {message.role === "user" && 
         
-            <div className="w-[50%] ml-auto my-5 justify-items-end">
-                <p className='bg-fuchsia-800 text-xl rounded-lg px-3 py-1.5'>
+            <div className="w-[80%] ml-auto my-2 justify-items-end">
+                <p className='bg-[#8641C3] sm:text-xl rounded-lg px-3 py-1.5'>
                     {message.content} 
                 </p>
             </div>

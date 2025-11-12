@@ -20,10 +20,10 @@ const MessageContainer = ({messages, result, isLoading, messageRef}) => {
   return (
     <>
     {messages.length < 2  && 
-        <div className="m-auto">
+        <div className="m-auto text-center">
             <div>
-                <h1 className="text-5xl text-white font-bold">Beauty AI</h1>
-                <h2 className="text-2xl text-gray-200">Your Beauty Questions, Solved</h2>
+                <h1 className="md:text-5xl max-md:text-3xl text-white font-bold">Beauty AI</h1>
+                <h2 className="md:text-3xl max-md:text-xl text-gray-200">Your Beauty Questions, Solved</h2>
             </div>
         </div>
     }
@@ -31,10 +31,11 @@ const MessageContainer = ({messages, result, isLoading, messageRef}) => {
     {messages.length >= 2 &&
         <div 
             ref={chatRef}
-            className="rounded-2xl max-sm:w-[80%] sm:w-[80%] px-6 pb-15 pt-5 flex flex-col" >
-            {messages.map((message, i) => {
+            className="rounded-2xl max-sm:w-full sm:w-[90%] px-2 pb-15 pt-5 flex flex-col" >
+            {messages.map((message) => {
                 return <MessageCard key={message.id} message={message}/>
             })}
+
             {isLoading ? <TypingDots /> : (
                 result && 
                 <div className="markdown w-[80%]">
