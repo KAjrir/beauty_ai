@@ -128,7 +128,7 @@ const ChatUI = ({session}) => {
         messageRef={messageRef}
       />
 
-      {error && <p>Subscribe to a plan to ask more questions.</p>}
+      {error && <p className="fixed bottom-22">Subscribe to a plan to ask more questions.</p>}
       <AcceptPrompt
         handleSend={handleSend}
       />

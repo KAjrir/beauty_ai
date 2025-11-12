@@ -14,6 +14,8 @@ const MessageContainer = ({messages, result, isLoading, messageRef}) => {
             messageRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
 
+        return () => messageRef.current.style.height = 0;
+
     }, [isLoading])
     
 
