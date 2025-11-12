@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import AcceptPrompt from "./AcceptPrompt";
 import MessageContainer from "./MessageContainer";
-import ReactMarkdown from 'react-markdown';
 
 
 const instructions = `
@@ -75,7 +74,7 @@ const ChatUI = ({session}) => {
               }),
             });
           } catch (error) {
-              console.log(error)
+              console.error(error)
               setError(error.message)
           } finally{
             setIsLoading(prev => prev = false)
@@ -129,7 +128,7 @@ const ChatUI = ({session}) => {
         messageRef={messageRef}
       />
 
-      {error && <p>Sluit een abonnement af om meer vragen te stellen</p>}
+      {error && <p>Subscribe to a plan to ask more questions.</p>}
       <AcceptPrompt
         handleSend={handleSend}
       />
