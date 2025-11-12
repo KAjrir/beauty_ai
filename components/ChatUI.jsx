@@ -120,7 +120,7 @@ const ChatUI = ({session}) => {
 
   return (
     
-    <main className="h-[100svh] flex flex-col items-center">
+    <main className="h-full flex flex-col justify-between items-center">
       
       <MessageContainer
         messages={messages}

@@ -34,7 +34,7 @@ export default async function RootLayout({ children }) {
     <html lang="en">
       <SessionProvider session={session}>
         <body
-          className={`${glacial.className} [background-image:var(--gradient-main)] text-white antialiased`}
+          className={`${glacial.className} [background-image:var(--gradient-main)] text-white antialiased flex flex-col h-svh`}
         >
           {children}
         </body>
