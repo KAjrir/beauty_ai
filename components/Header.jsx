@@ -18,7 +18,7 @@ export default function Header({ user, plans, onHamburgerClick, isDesktop }) {
       {/* Linkerkant */}
       <div className="flex items-center gap-3">
         {/* Hamburger alleen op mobiel */}
-        {!isDesktop && (
+        {!isDesktop && user && (
           <button
             onClick={onHamburgerClick}
             className="bg-purple-800 p-2 rounded-md hover:bg-purple-700 transition"
