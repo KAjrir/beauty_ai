@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 
-export default function ClientLayoutShell({ user, plans, children }) {
+export default function ClientLayoutShell({ user, plans, chats, children }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -28,16 +28,20 @@ export default function ClientLayoutShell({ user, plans, children }) {
         onHamburgerClick={() => setIsOpen(true)}
         isDesktop={isDesktop}
       />
+      
+        <main className="flex flex-1 overflow-hidden">
+        { user && (
+          <Sidebar
+            chats={chats}
+            isOpen={isOpen}
+            isDesktop={isDesktop}
+            onToggle={() => setIsOpen((prev) => !prev)}
+            onClose={() => setIsOpen(false)}
+          />
+        )}
 
-      <main className="flex flex-1 overflow-hidden">
-        <Sidebar
-          isOpen={isOpen}
-          isDesktop={isDesktop}
-          onToggle={() => setIsOpen((prev) => !prev)}
-          onClose={() => setIsOpen(false)}
-        />
-        <div className="flex-3 overflow-y-auto">{children}</div>
-      </main>
+          <div className="flex-3 overflow-y-auto">{children}</div>
+        </main>
     </>
   );
 }

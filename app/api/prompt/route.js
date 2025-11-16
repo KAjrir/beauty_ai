@@ -5,7 +5,10 @@ import { prisma } from '@/database/prisma/prisma';
 import OpenAI from "openai";
 import { auth } from '@/auth';
 import { getUserWithFeatures } from '@/lib/actions/action';
+import { systemInstructions } from '@/constants';
+import { DIRTY } from 'zod';
 const client = new OpenAI()
+
 
 function limitedCounts (plan = "free", cookie, session){
     if (plan !== 'free') return false;
@@ -86,40 +89,141 @@ export async function POST (req) {
     }
 
     const body = await req.json()
-    const { messages } = body
+    let { messages, chatId } = body
 
-    const messagesWithoutWhiteId = messages.map(message => {
+    if (!chatId) {
+        try {
+            const response = await client.responses.create({
+                model: "gpt-5",
+                input: `Analyze the text and think of an appropiate title. It shouldn't be too long maximum of 35 characters: ${messages[messages.length - 1].content}`
+            });
+
+            const chat = await prisma.chat.create({
+                data: {
+                    userId: user.id,
+                    title: response.output_text
+                }
+            })
+            
+            chatId = chat.id
+
+        } catch(err){
+            console.error(err)
+            return NextResponse.json({error: "Internal Error"}, {status: 500})
+        }
+    }
+
+    try {
+        const validateChat = await prisma.chat.findFirst({
+            where: {
+                id: chatId,
+                userId: user.id
+            }
+        })
+
+        if (!validateChat) {
+            return NextResponse.json(
+                    { error: `Unable to load conversation ${chatId}` },
+                    { status: 404 }
+                );
+        }
+
+    } catch(err){
+        console.error(err)
+        return NextResponse.json({error: "Internal Error"}, {status: 500})
+    }
+
+
+
+    const messagesWithoutId = messages.map(message => {
         return {role: message.role, content: message.content}
     })
 
+    const input = [
+        ...systemInstructions,
+        ...messagesWithoutId
+    ]
+
+    const model = session ? planDetails?.features.version : 'gpt-4o-mini'
     let response
-
-    if(!session) {
+    try {
         response = await client.responses.create({
-            model: 'gpt-4o-mini',
-            input: messagesWithoutWhiteId,
+            model: model,
+            input: input,
             stream: true,
         });
-
-    } else {
-        response = await client.responses.create({
-            model: planDetails?.features.version,
-            input: messagesWithoutWhiteId,
-            stream: true,
-        });
+    } catch (err){
+        console.error(err);
+        return NextResponse.json(
+            { error: "Error fetching AI response. Please try again." },
+            { status: 500 }
+        );
     }
 
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
         async start(controller) {
+            controller.enqueue(
+                encoder.encode(JSON.stringify({
+                    type: "init",
+                    chatId,
+                }) + "\n")
+            );
+
+            const userMessage = await prisma.chatMessage.create({
+                data: {
+                    chatId,
+                    role: "user",
+                    content: messages[messages.length - 1].content,
+                },
+            });
+
+            controller.enqueue(
+                encoder.encode(JSON.stringify({
+                    type: "user_message_id",
+                    id: userMessage.id
+                }) + "\n")
+            )
+
+                
 
             for await (const token of response) {
-                controller.enqueue(encoder.encode(token?.delta));
+                if(token.delta) {
+                    controller.enqueue(
+                        encoder.encode(JSON.stringify({
+                            type: "token",
+                            value: token.delta
+                        }) + "\n" )
+                            
+                    )
+                }
+                
                 if(token.type === "response.completed"){
-                    console.log(JSON.stringify(token,null,2))
-                    // console.log(token.response.output[0].content[0].text)
-                    controller.enqueue(encoder.encode(`\n[END]\n${token.response.output[0].content[0].text}\n`));
+                    console.log(JSON.stringify(token, null, 2))
 
+                    const finalText = token.response.output[0].content[0].text;
+                    const assistantMessage = await prisma.chatMessage.create({
+                        data: {
+                            chatId,
+                            role: "assistant",
+                            content: finalText,
+                        }
+                    });
+
+                    controller.enqueue(
+                        encoder.encode(JSON.stringify({
+                            type: "assistant_message_id",
+                            id: assistantMessage.id
+                        }) + "\n")
+                    )
+
+                    controller.enqueue(
+                        encoder.encode(JSON.stringify({
+                            type: "end",
+                            text: finalText
+                        }) + "\n")
+                    )
+                    controller.enqueue(encoder.encode("[END]\n"));
                 }
             }
 
@@ -129,12 +233,10 @@ export async function POST (req) {
 
     return new NextResponse(stream, {
         headers: {
-            'Content-Type': 'text/plain',
+            'Content-Type': 'text/event-stream',
             'Cache-Control': 'no-cache',
+            "Connection": "keep-alive"
         },
     });
-
-    return NextResponse.json({message: response.output_text});
-
 
 }

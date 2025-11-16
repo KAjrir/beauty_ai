@@ -15,7 +15,7 @@ const Home = async () => {
 
   return (
     <>
-      <ChatUI session={session} />
+      <ChatUI />
     </>
   );
 }

@@ -69,12 +69,14 @@ export default function Header({ user, plans, onHamburgerClick, isDesktop }) {
         )}
 
         {/* Avatar */}
+        {user && (
         <button onClick={() => setOpen(true)} className="flex items-center">
           <Avatar className="cursor-pointer h-9 w-9">
             <AvatarImage src="https://github.com/shadcn.png" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </button>
+        )}
 
         {/* Plancontainer */}
         <PlanContainer
