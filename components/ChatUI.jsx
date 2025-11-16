@@ -54,7 +54,6 @@ const ChatUI = ({chatMessages, error}) => {
         }),
       });
     } catch (err) {
-        // setError(err.error)
         toast.error(err.error)
     } finally{
       setIsLoading(prev => prev = false)

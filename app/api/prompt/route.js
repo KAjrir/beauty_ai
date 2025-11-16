@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers';
 import { prisma } from '@/database/prisma/prisma';
+import { v4 } from "uuid"
+
 
 import OpenAI from "openai";
 import { auth } from '@/auth';
@@ -90,6 +92,84 @@ export async function POST (req) {
 
     const body = await req.json()
     let { messages, chatId } = body
+
+    if (!user) {
+        const input = [
+            ...systemInstructions,
+            ...messages.map(msg => ({ 
+                role: msg.role, 
+                content: msg.content 
+            }))
+        ];
+
+        const model = "gpt-4o-mini";
+
+        const response = await client.responses.create({
+            model,
+            input,
+            stream: true,
+        });
+
+        const encoder = new TextEncoder();
+        const stream = new ReadableStream({
+            async start(controller) {
+
+                controller.enqueue(
+                    encoder.encode(JSON.stringify({
+                        type: "user_message_id",
+                        id: v4()
+                    }) + "\n")
+                )
+
+                    
+
+                for await (const token of response) {
+                    if(token.delta) {
+                        controller.enqueue(
+                            encoder.encode(JSON.stringify({
+                                type: "token",
+                                value: token.delta
+                            }) + "\n" )
+                                
+                        )
+                    }
+                    
+                    if(token.type === "response.completed"){
+                        console.log(JSON.stringify(token, null, 2))
+
+                        const finalText = token.response.output[0].content[0].text;
+
+                        controller.enqueue(
+                        encoder.encode(JSON.stringify({
+                            type: "assistant_message_id",
+                            id: v4()
+                        }) + "\n")
+                    )
+
+                        controller.enqueue(
+                            encoder.encode(JSON.stringify({
+                                type: "end",
+                                text: finalText
+                            }) + "\n")
+                        )
+                    }
+                }
+
+                controller.close();
+                },
+        });
+
+        return new NextResponse(stream, {
+            headers: {
+                'Content-Type': 'text/event-stream',
+                'Cache-Control': 'no-cache',
+                "Connection": "keep-alive"
+            },
+        });
+    }
+
+
+
 
     if (!chatId) {
         try {
