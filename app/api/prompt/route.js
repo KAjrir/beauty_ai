@@ -83,7 +83,7 @@ export async function POST (req) {
     const limit = limitedCounts(planDetails?.name, cookieStore, session)
     
     if (limit) {
-        return NextResponse.json({ error: "Limiet bereikt", limitReached: true }, {
+        return NextResponse.json({ error: "Reached Limit", limitReached: true }, {
             status: 429,
         });
     }
@@ -104,7 +104,7 @@ export async function POST (req) {
                     title: response.output_text
                 }
             })
-            
+
             chatId = chat.id
 
         } catch(err){
@@ -120,10 +120,11 @@ export async function POST (req) {
                 userId: user.id
             }
         })
+        console.log(validateChat)
 
         if (!validateChat) {
             return NextResponse.json(
-                    { error: `Unable to load conversation ${chatId}` },
+                    { error: `Unable to load conversation ${chatId}`},
                     { status: 404 }
                 );
         }

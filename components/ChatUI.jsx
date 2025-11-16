@@ -1,21 +1,31 @@
 'use client'
 
+import { useToast } from "@/components/ui/toast-provider"
 import { useRef, useState, useEffect,  } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AcceptPrompt from "./AcceptPrompt";
 import MessageContainer from "./MessageContainer";
 
 
-const ChatUI = ({chatMessages}) => {
+const ChatUI = ({chatMessages, error}) => {
+  const toast = useToast()
+  const router = useRouter()
 
-  const [error, setError] = useState(null)
+  useEffect(() => {
+    if(error) {
+      toast.error(error)
+      router.replace("/")
+    }
+
+  }, [error])
+
+  // const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState('');
 
   const [messages, setMessages] = useState( chatMessages || [] )
 
   const { chatId } = useParams()
-  const router = useRouter()
     
   const messageRef = useRef(null)
 
@@ -43,17 +53,20 @@ const ChatUI = ({chatMessages}) => {
           chatId: chatId
         }),
       });
-    } catch (error) {
-        console.error(error)
-        setError(error.message)
+    } catch (err) {
+        // setError(err.error)
+        toast.error(err.error)
     } finally{
       setIsLoading(prev => prev = false)
     }
     
     if (!res.ok) {
       const errorJson = await res.json();
-      console.log('Backend error:', errorJson);
-      setError(errorJson || 'Something went wrong');
+      const msg = errorJson.error || "Something went wrong"
+
+      // setError(msg);
+      toast.error(msg)
+
       return;
     }
 
@@ -150,13 +163,13 @@ const ChatUI = ({chatMessages}) => {
         messageRef={messageRef}
       />
 
-      {error ? 
+      {/* {error ? 
         (error.limitReached 
         ? <p className="fixed bottom-22 text-xl">Subscribe to a plan to ask more questions.</p>
         : <p className="fixed bottom-22 text-xl">{error.error}</p>
         )
       : (null)
-      }
+      } */}
       
       <AcceptPrompt
         handleSend={handleSend}

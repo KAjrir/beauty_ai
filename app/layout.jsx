@@ -2,6 +2,7 @@ import "./globals.css";
 
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import { ToastProvider } from "@/components/ui/toast-provider";
 
 import localFont from 'next/font/local';
 
@@ -36,7 +37,9 @@ export default async function RootLayout({ children }) {
         <body
           className={`${glacial.className} [background-image:var(--gradient-main)] text-white antialiased flex flex-col h-svh`}
         >
-          {children}
+          <ToastProvider>
+            {children}
+          </ToastProvider>
         </body>
       </SessionProvider>
     </html>

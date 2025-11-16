@@ -19,6 +19,7 @@ import { FIELD_NAMES, FIELD_TYPES } from "@/constants";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useToast } from "./ui/toast-provider";
 
 
 const AuthForm = ({
@@ -28,6 +29,7 @@ const AuthForm = ({
   onSubmit,
 }) => {
   const router = useRouter();
+  const toast = useToast()
 
   const isSignIn = type === "SIGN_IN";
 
@@ -41,13 +43,13 @@ const AuthForm = ({
     console.log(result)
 
     if (result.success) {
-      isSignIn ? console.log("you have succesfully signed in")
-      : console.log("You have succesfully signed up")
+      isSignIn ? toast.success("you have succesfully signed in")
+      : toast.success("You have succesfully signed up")
 
       router.push("/");
     } else {
-      isSignIn ? console.log("Error Signing in")
-      : console.log("Error signing up")
+      isSignIn ? toast.error("Error Signing in")
+      : toast.error("Error signing up")
     }
   };
 
