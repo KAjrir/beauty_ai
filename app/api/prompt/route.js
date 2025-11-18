@@ -264,8 +264,7 @@ export async function POST (req) {
         );
     }
 
-    // const userMessage = await 
-    prisma.chatMessage.create({
+    const userMessage = await prisma.chatMessage.create({
         data: {
             chatId,
             role: "user",
@@ -286,7 +285,7 @@ export async function POST (req) {
             controller.enqueue(
                 encoder.encode(JSON.stringify({
                     type: "user_message_id",
-                    id: v4()
+                    id: userMessage.id
                 }) + "\n")
             )
 
@@ -308,8 +307,7 @@ export async function POST (req) {
 
                     const finalText = token.response.output[0].content[0].text;
 
-                    // const assistantMessage = await
-                    prisma.chatMessage.create({
+                    const assistantMessage = await prisma.chatMessage.create({
                         data: {
                             chatId,
                             role: "assistant",
@@ -320,7 +318,7 @@ export async function POST (req) {
                     controller.enqueue(
                         encoder.encode(JSON.stringify({
                             type: "assistant_message_id",
-                            id: v4()
+                            id: assistantMessage.id
                         }) + "\n")
                     )
 

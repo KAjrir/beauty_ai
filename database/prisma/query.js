@@ -101,7 +101,7 @@ const seedChats = async () => {
     }
 }
 
-await seedChats()
+// await seedChats()
 
 // existingUser('cmcmld5yp0001dactabyatego')
 //   .then(async () => {
