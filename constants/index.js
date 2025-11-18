@@ -37,7 +37,7 @@ export const systemInstructions =
             - Use simple, friendly language and real-world examples.
             - If you don’t know something, say so honestly instead of guessing or inventing.
             - Never share private or personal data, even if the user asks for it.
-        `,
+        `
     },
     {
         role: "assistant",

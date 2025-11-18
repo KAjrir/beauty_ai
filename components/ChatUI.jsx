@@ -1,7 +1,7 @@
 'use client'
 
 import { useToast } from "@/components/ui/toast-provider"
-import { useRef, useState, useEffect,  } from "react";
+import { useRef, useState, useEffect, startTransition} from "react";
 import { useParams, useRouter } from "next/navigation";
 import AcceptPrompt from "./AcceptPrompt";
 import MessageContainer from "./MessageContainer";
@@ -22,23 +22,31 @@ const ChatUI = ({chatMessages, error}) => {
   // const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState('');
-
   const [messages, setMessages] = useState( chatMessages || [] )
+  const [pendingChatId, setPendingChatId] = useState(null)
+  const [changeRouter, setChangeRouter] = useState(false)
 
   const { chatId } = useParams()
     
   const messageRef = useRef(null)
 
+  useEffect(() => {
+    if (!pendingChatId) return;
+
+    startTransition(() => {
+      router.replace(`/chat/${pendingChatId}`, {scroll: false});
+    })
+  }, [changeRouter])
+
   
   const handleSend = async (data) => {
     const tempId = uuid()
-    console.log(tempId)
 
     const updatedMessages = [...messages, { id: tempId, role: 'user', content: data, isTempUser: true }];
     setMessages(updatedMessages)
     setResult('');
 
-    setIsLoading(prev => !prev)
+    setIsLoading(true)
 
     let res
     
@@ -56,14 +64,13 @@ const ChatUI = ({chatMessages, error}) => {
     } catch (err) {
         toast.error(err.error)
     } finally{
-      setIsLoading(prev => prev = false)
+      setIsLoading(false)
     }
     
     if (!res.ok) {
-      const errorJson = await res.json();
-      const msg = errorJson.error || "Something went wrong"
+      const err = await res.json();
+      const msg = err.error || "Something went wrong"
 
-      // setError(msg);
       toast.error(msg)
 
       return;
@@ -103,7 +110,12 @@ const ChatUI = ({chatMessages, error}) => {
 
           if (event.type === "init") {
             if (event.chatId !== chatId) {
-              router.replace(`/chat/${event.chatId}`);
+              setPendingChatId(event.chatId)
+            }
+
+            if (messageRef.current) {
+              messageRef.current.style.height = 15+"vw"
+              window.scrollBy(0, 200)
             }
             continue;
           }
@@ -139,9 +151,9 @@ const ChatUI = ({chatMessages, error}) => {
             setResult("");
 
             if (messageRef.current) {
-              messageRef.current.style.height = "0px";
+              messageRef.current.style.height = 0
             }
-
+            setChangeRouter(true)
             return;
           }
 
@@ -149,6 +161,8 @@ const ChatUI = ({chatMessages, error}) => {
         }
       }
     }
+
+    setChangeRouter(false)
   }
 
   return (
@@ -161,14 +175,6 @@ const ChatUI = ({chatMessages, error}) => {
         isLoading={isLoading}
         messageRef={messageRef}
       />
-
-      {/* {error ? 
-        (error.limitReached 
-        ? <p className="fixed bottom-22 text-xl">Subscribe to a plan to ask more questions.</p>
-        : <p className="fixed bottom-22 text-xl">{error.error}</p>
-        )
-      : (null)
-      } */}
       
       <AcceptPrompt
         handleSend={handleSend}

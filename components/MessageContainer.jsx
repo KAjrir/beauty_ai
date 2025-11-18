@@ -1,24 +1,25 @@
+"use client"
+
 import MessageCard from "./MessageCard"
 import ReactMarkdown from 'react-markdown';
 import TypingDots from "./TypingDots";
 import '@/styles/markdown.css'
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 
 const MessageContainer = ({messages, result, isLoading, messageRef}) => {
     const chatRef = useRef(null)
+    const [ready, setReady] = useState(false)
     console.log(messages)
+
     useEffect(() => {
-        if(chatRef.current && messageRef.current && isLoading){
-            messageRef.current.style.height = 10 + 'vh';
-            chatRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        if(messageRef.current) {
+            messageRef.current?.scrollIntoView({ behavior: "instant" });
         }
 
-        return () => {
-            if (messageRef.current)  messageRef.current.style.height = 0;
-        }
+        setReady(true)
 
-    }, [isLoading])
+    }, [messageRef.current, isLoading])
     
 
   return (
@@ -35,7 +36,10 @@ const MessageContainer = ({messages, result, isLoading, messageRef}) => {
     {messages.length &&
         <div 
             ref={chatRef}
-            className="rounded-2xl max-sm:w-full sm:w-[90%] px-2 pb-15 pt-5 flex flex-col"
+            className={`rounded-2xl max-sm:w-full sm:w-[90%] px-2 pb-25 pt-5 flex flex-col gap-3
+                ${ready ? "opacity-100": "opacity-0"}
+            `}
+        
         >
             {messages.map((message) => {
                 return <MessageCard key={message.id} message={message}/>

@@ -62,7 +62,7 @@ export default function Header({ user, plans, onHamburgerClick, isDesktop }) {
         {user && (
           <button
             onClick={handleSignOut}
-            className="hover:underline text-gray-200 hover:text-white transition"
+            className="hover:underline cursor-pointer text-gray-200 hover:text-white transition"
           >
             Sign out
           </button>

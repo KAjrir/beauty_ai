@@ -93,6 +93,8 @@ export async function POST (req) {
     const body = await req.json()
     let { messages, chatId } = body
 
+
+    // Free usage
     if (!user) {
         const input = [
             ...systemInstructions,
@@ -169,45 +171,61 @@ export async function POST (req) {
     }
 
 
-
-
-    if (!chatId) {
-        try {
-            const response = await client.responses.create({
-                model: "gpt-5",
-                input: `Analyze the text and think of an appropiate title. It shouldn't be too long maximum of 50 characters: ${messages[messages.length - 1].content}`
-            });
-
-            const chat = await prisma.chat.create({
-                data: {
-                    userId: user.id,
-                    title: response.output_text
+    // Paid usage
+    
+    try {
+        if (chatId) {
+            const validateChat = await prisma.chat.findFirst({
+                where: {
+                    id: chatId,
+                    userId: user.id
                 }
             })
+            console.log(validateChat)
 
-            chatId = chat.id
-
-        } catch(err){
-            console.error(err)
-            return NextResponse.json({error: "Internal Error"}, {status: 500})
-        }
-    }
-
-    try {
-        const validateChat = await prisma.chat.findFirst({
-            where: {
-                id: chatId,
-                userId: user.id
+            if (!validateChat) {
+                return NextResponse.json(
+                        { error: `Unable to load conversation ${chatId}`},
+                        { status: 404 }
+                    );
             }
-        })
-        console.log(validateChat)
+        }else{
+            try {
 
-        if (!validateChat) {
-            return NextResponse.json(
-                    { error: `Unable to load conversation ${chatId}`},
-                    { status: 404 }
-                );
+                
+                const chat = await prisma.chat.create({
+                    data: {
+                        userId: user.id,
+                    }
+                })
+                chatId = chat.id
+                
+                setImmediate(async () => {
+                    try{
+                        const res = await client.responses.create({
+                            model: "gpt-5",
+                            input: `Analyze the text and think of an appropiate title. It shouldn't be too long maximum of 50 characters: ${messages[messages.length - 1].content}`
+    
+                        });
+    
+                        await prisma.chat.update({
+                            where: { id: chatId },
+                            data: { title: res.output_text }
+                        });
+                    } catch(err){
+                        console.error(err)
+                        return NextResponse.json({error: "Internal Error"}, {status: 500})
+
+                    }
+                });
+                
+    
+            } catch(err){
+                console.error(err)
+                return NextResponse.json({error: "Internal Error"}, {status: 500})
+            }
         }
+
 
     } catch(err){
         console.error(err)
@@ -225,14 +243,19 @@ export async function POST (req) {
         ...messagesWithoutId
     ]
 
+
     const model = session ? planDetails?.features.version : 'gpt-4o-mini'
     let response
     try {
+        console.time("response")
+
         response = await client.responses.create({
             model: model,
             input: input,
             stream: true,
         });
+        console.timeEnd("response")
+
     } catch (err){
         console.error(err);
         return NextResponse.json(
@@ -240,6 +263,15 @@ export async function POST (req) {
             { status: 500 }
         );
     }
+
+    // const userMessage = await 
+    prisma.chatMessage.create({
+        data: {
+            chatId,
+            role: "user",
+            content: messages[messages.length - 1].content,
+        },
+    }).catch(err => console.error("failed to save message: ", err))
 
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
@@ -251,18 +283,10 @@ export async function POST (req) {
                 }) + "\n")
             );
 
-            const userMessage = await prisma.chatMessage.create({
-                data: {
-                    chatId,
-                    role: "user",
-                    content: messages[messages.length - 1].content,
-                },
-            });
-
             controller.enqueue(
                 encoder.encode(JSON.stringify({
                     type: "user_message_id",
-                    id: userMessage.id
+                    id: v4()
                 }) + "\n")
             )
 
@@ -283,18 +307,20 @@ export async function POST (req) {
                     console.log(JSON.stringify(token, null, 2))
 
                     const finalText = token.response.output[0].content[0].text;
-                    const assistantMessage = await prisma.chatMessage.create({
+
+                    // const assistantMessage = await
+                    prisma.chatMessage.create({
                         data: {
                             chatId,
                             role: "assistant",
                             content: finalText,
                         }
-                    });
+                    }).catch(err => console.error("failed to save message: ", err))
 
                     controller.enqueue(
                         encoder.encode(JSON.stringify({
                             type: "assistant_message_id",
-                            id: assistantMessage.id
+                            id: v4()
                         }) + "\n")
                     )
 
@@ -321,3 +347,4 @@ export async function POST (req) {
     });
 
 }
+

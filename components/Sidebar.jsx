@@ -1,8 +1,12 @@
 "use client";
+
 import { X, ChevronLeft, ChevronRight, MessageSquare, Search } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-export default function Sidebar({ chats, isOpen, isDesktop, onToggle, onClose }) {
+export default function Sidebar({ chats, isOpen, isDesktop, setIsOpen, onToggle, onClose }) {
+  const pathName = usePathname()
+  console.log(pathName)
   return (
     <aside
       className={`bg-purple-950 border-r border-purple-800 text-white transition-all duration-300 flex flex-col
@@ -18,7 +22,7 @@ export default function Sidebar({ chats, isOpen, isDesktop, onToggle, onClose })
         {isOpen && <h2 className="text-lg font-semibold">Your Chats</h2>}
 
         {isDesktop ? (
-          <button onClick={onToggle} className="p-1 rounded hover:bg-purple-800">
+          <button onClick={onToggle} className="p-1 rounded hover:bg-purple-800 cursor-pointer">
             {isOpen ? <ChevronLeft size={22} /> : <ChevronRight size={22} />}
           </button>
         ) : (
@@ -28,15 +32,29 @@ export default function Sidebar({ chats, isOpen, isDesktop, onToggle, onClose })
         )}
       </div>
 
-      <nav className="flex-1 p-3 space-y-3">
-        <Link href={'/'}><SidebarItem icon={<MessageSquare size={22} />} label="New Chat" isOpen={isOpen} /></Link>
+      <nav className="flex-1 p-3 space-y-3 overflow-auto">
+        <Link href={'/'}>
+          <SidebarItem icon={<MessageSquare size={22} />} label="New Chat" isOpen={isOpen} />
+        </Link>
+
         <SidebarItem icon={<Search size={22} />} label="Search" isOpen={isOpen} />
         <hr />
         <nav className="flex-1 space-y-3">
           {chats && 
-            chats.map(chat => (
-              <Chat key={chat.id} id={chat.id} label={chat.title} isOpen={isOpen}/>
-            )
+            chats.map(chat => {
+              const currentChat = pathName === `/chat/${chat.id}`
+              return (
+              <Chat 
+                key={chat.id}
+                id={chat.id} 
+                label={chat.title}
+                isOpen={isOpen}
+                isDesktop={isDesktop}
+                setIsOpen={setIsOpen}
+                currentChat={currentChat}
+              />
+              )
+            }
           )}
         </nav>
       </nav>
@@ -47,7 +65,7 @@ export default function Sidebar({ chats, isOpen, isDesktop, onToggle, onClose })
 function SidebarItem({ icon=null, label, isOpen }) {
   return (
     <button
-      className={`flex items-center gap-3 w-full hover:bg-purple-800 rounded p-2 transition-all ${
+      className={`flex items-center gap-3 w-full hover:bg-purple-800 active:bg-purple-900 cursor-pointer rounded p-2 transition-all ${
         isOpen ? "justify-start" : "justify-center"
       }`}
     >
@@ -57,11 +75,21 @@ function SidebarItem({ icon=null, label, isOpen }) {
   );
 }
 
-function Chat({id, label, isOpen}) {
+function Chat({id, label, isOpen, isDesktop, setIsOpen, currentChat}) {
   return (
-    <Link key={id} href={`/chat/${id}`}>
+    <Link key={id} href={`/chat/${id}`}
+      onNavigate={(e) => {
+        if(currentChat){
+          e.preventDefault()
+          return
+        }
+        if(!isDesktop && isOpen) {
+          setIsOpen(false)
+        }
+      }}
+    >
       <button
-        className={`flex items-center gap-3 w-full hover:bg-purple-800 cursor-pointer rounded p-2 transition-all ${
+        className={`flex items-center gap-3 w-full hover:bg-purple-800 active:bg-purple-900 cursor-pointer rounded p-2 transition-all ${
           isOpen ? "justify-start" : "justify-center"
         }`}
       >

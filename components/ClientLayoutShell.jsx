@@ -34,6 +34,7 @@ export default function ClientLayoutShell({ user, plans, chats, children }) {
           <Sidebar
             chats={chats}
             isOpen={isOpen}
+            setIsOpen={setIsOpen}
             isDesktop={isDesktop}
             onToggle={() => setIsOpen((prev) => !prev)}
             onClose={() => setIsOpen(false)}

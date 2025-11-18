@@ -6,15 +6,18 @@ import { signUp } from "@/lib/actions/action";
 
 const page = () => {
   return (
-    <AuthForm
-      type="SIGN_UP"
-      schema={signUpSchema} 
-      defaultValues={{
-        email: "",
-        password: ""
-      }}
-      onSubmit={signUp}
-    />
+    <>
+      <hr />
+      <AuthForm
+        type="SIGN_UP"
+        schema={signUpSchema} 
+        defaultValues={{
+          email: "",
+          password: ""
+        }}
+        onSubmit={signUp}
+      />
+    </>
   )
 }
 

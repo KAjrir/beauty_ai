@@ -20,6 +20,7 @@ import { FIELD_NAMES, FIELD_TYPES } from "@/constants";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "./ui/toast-provider";
+import { useState } from "react"
 
 
 const AuthForm = ({
@@ -28,6 +29,7 @@ const AuthForm = ({
   defaultValues,
   onSubmit,
 }) => {
+  const [loading, setLoading] = useState(false)
   const router = useRouter();
   const toast = useToast()
 
@@ -39,8 +41,10 @@ const AuthForm = ({
   });
 
   const handleSubmit = async (data) => {
+    setLoading(true)
     const result = await onSubmit(data);
     console.log(result)
+    setLoading(false)
 
     if (result.success) {
       isSignIn ? toast.success("you have succesfully signed in")
@@ -48,13 +52,12 @@ const AuthForm = ({
 
       router.push("/");
     } else {
-      isSignIn ? toast.error("Error Signing in")
-      : toast.error("Error signing up")
+      toast.error(result.error)
     }
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-[340px]">
       <h1 className="text-2xl font-semibold text-white">
         {isSignIn ? "Welcome back to Beauty AI" : "Create your personal account"}
       </h1>
@@ -89,8 +92,18 @@ const AuthForm = ({
             />
           ))}
 
-          <Button type="submit" className="form-btn">
-            {isSignIn ? "Sign In" : "Sign Up"}
+          <Button 
+            type="submit"
+            className={`form-btn ${loading ? "opacity-50 cursor-not-allowed" : null}`}
+          >
+            {loading ? (
+                <div className="flex items-center gap-2">
+                  <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  Loading...
+                </div>
+            ): (
+              isSignIn ? "Sign In" : "Sign Up"
+            )}
           </Button>
         </form>
       </Form>

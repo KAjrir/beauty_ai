@@ -60,6 +60,21 @@ body{
   @apply [background-image:var(--gradient-button)] shadow-2xl rounded-full border-2 py-1.5 px-5 font-semibold hover:underline
 }
 
+.spinner {
+  height: 90px;
+  width: 90px;
+  border: 6px solid;
+  border-color: white transparent white transparent;
+  border-radius: 50%;
+  animation: spin 1.5s ease infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg)
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

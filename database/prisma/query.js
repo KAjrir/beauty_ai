@@ -90,14 +90,27 @@ const getPlans = async () => {
 
 
 
-existingUser('cmcmld5yp0001dactabyatego')
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+const seedChats = async () => {
+    for (let i = 0; i < 10; i++){
+        await prisma.chat.create({
+            data: {
+                userId: "cmhmmvzdo0001dah20ejeypbb",
+                title: `${i}`
+            }
+        })
+    }
+}
+
+await seedChats()
+
+// existingUser('cmcmld5yp0001dactabyatego')
+//   .then(async () => {
+//     await prisma.$disconnect()
+//   })
+//   .catch(async (e) => {
+//     console.error(e)
+//     await prisma.$disconnect()
+//     process.exit(1)
+//   })
 
 
