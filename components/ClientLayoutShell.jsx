@@ -1,47 +1,34 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
+import Loading from "@/app/loading";
+import { auth } from '@/auth';
+import { getUser, getPlans } from '@/lib/actions/action';
+import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
-export default function ClientLayoutShell({ user, plans, chats, children }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const DESKTOP = window.innerWidth >= 640;
-
-      setIsDesktop(DESKTOP);
-      setIsOpen(DESKTOP);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+export default async function ClientLayoutShell({ children }) {
+  const session = await auth();
+  if(!session) redirect("/")
+  const user = session ? await getUser(session.user.id) : null;
+  const plans = await getPlans();
 
   return (
     <>
       <Header
         plans={plans}
         user={user}
-        onHamburgerClick={() => setIsOpen(true)}
-        isDesktop={isDesktop}
       />
       
         <main className="flex flex-1 overflow-hidden">
         { user && (
-          <Sidebar
-            chats={chats}
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
-            isDesktop={isDesktop}
-            onToggle={() => setIsOpen((prev) => !prev)}
-            onClose={() => setIsOpen(false)}
-          />
+          <Suspense>
+            <Sidebar />
+          </Suspense>
         )}
 
-          <div className="flex-3 overflow-y-auto">{children}</div>
+          <div className="flex-3 overflow-y-auto">
+            {children}
+          </div>
         </main>
     </>
   );

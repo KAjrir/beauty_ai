@@ -6,12 +6,24 @@ import { usePathname } from "next/navigation";
 import { navigationLinks } from "@/constants/index";
 import { handleSignOut } from "@/lib/actions/action";
 import { Menu } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PlanContainer from "./PlanContainer";
 
-export default function Header({ user, plans, onHamburgerClick, isDesktop }) {
+export default function Header({ user, plans }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const DESKTOP = window.innerWidth >= 640;
+
+      setIsDesktop(DESKTOP);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <header className="sticky top-0 h-24 max-sm:h-16 bg-purple-900 flex justify-between items-center px-4 md:px-6 shadow-md z-50">
@@ -20,7 +32,7 @@ export default function Header({ user, plans, onHamburgerClick, isDesktop }) {
         {/* Hamburger alleen op mobiel */}
         {!isDesktop && user && (
           <button
-            onClick={onHamburgerClick}
+            onClick={() => setOpen(true)}
             className="bg-purple-800 p-2 rounded-md hover:bg-purple-700 transition"
           >
             <Menu size={20} />
