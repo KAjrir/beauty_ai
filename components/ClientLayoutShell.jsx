@@ -8,7 +8,6 @@ import { redirect } from "next/navigation";
 
 export default async function ClientLayoutShell({ children }) {
   const session = await auth();
-  if(!session) redirect("/")
   const user = session ? await getUser(session.user.id) : null;
   const plans = await getPlans();
 
