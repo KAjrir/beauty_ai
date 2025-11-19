@@ -15,8 +15,9 @@ export async function POST(req) {
 
   try {
     const event = stripe.webhooks.constructEvent(rawBody, signature, endpointSecret);
+    const session = event.data.object;
+    
     if (event.type === 'checkout.session.completed') {
-      const session = event.data.object;
       const userId = session.metadata?.userId
       const planId = session.metadata?.planId
       console.log("SESSION: ", session)
@@ -33,10 +34,52 @@ export async function POST(req) {
         data: {
           subscription: {
             update: {
-              where: { userId: userId },
               data: { 
                 planId: planId,
                 stripeSubscriptionId: session.subscription
+              },
+            },
+          },
+        },
+      });
+    }
+
+    if(event.type === "customer.subscription.updated"){
+      const stripeCustomerId = session.customer
+      const planName = session.items.data[0].price.lookup_key
+
+      const plan = await prisma.plan.findUnique({
+        where: { name: planName},
+      });
+
+      const user = await prisma.user.findUnique({
+        where: { stripeCustomerId},
+      });
+
+      await prisma.subscription.update({
+        where: {
+          userId: user.id
+        },
+        data: {
+          planId: plan.id
+        }
+      })
+      
+    }
+
+    if(event.type === "customer.subscription.delete"){
+      const freePlan = await prisma.plan.findUnique({
+        where: { name: 'free' },
+      });
+
+      await prisma.user.update({
+        where: { stripeCustomerId:  session.customer},
+        data: {
+          subscription: {
+            update: {
+              data: { 
+                planId: freePlan.id,
+                stripeSubscriptionId: null
               },
             },
           },
@@ -50,24 +93,3 @@ export async function POST(req) {
     return NextResponse.json({error: err.message});
   }
 }
-
-  // if (event.type === 'checkout.session.completed') {
-  //   const session = event.data.object as Stripe.Checkout.Session;
-  //   const customerId = session.customer as string;
-  //   const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
-
-  //   const stripePriceId = subscription.items.data[0].price.id;
-
-  //   const plan = await prisma.plan.findUnique({ where: { stripePriceId } });
-  //   if (!plan) return NextResponse.json({ error: 'No plan found for this Stripe price' }, { status: 404 });
-
-  //   await prisma.user.update({
-  //     where: { stripeCustomerId: customerId },
-  //     data: { planId: plan.id },
-  //   });
-
-  //   console.log(`✅ Updated user plan to ${plan.id}`);
-  // }
-
-  // return new NextResponse('OK', { status: 200 });
-// }

@@ -40,7 +40,7 @@ model Subscription {
   startDate            DateTime @default(now()) @map("start_date")
   endDate              DateTime @map("end_date")
   stripeSubscriptionId String?  @map("stripe_subscription_id")
-  plan                 Plan     @relation(fields: [planId], references: [id])
+  plan                 Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
   user                 User     @relation("UserToSubscription", fields: [userId], references: [id])
 }
 
@@ -56,7 +56,7 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  
+
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
