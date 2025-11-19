@@ -25,11 +25,11 @@ const AcceptPrompt = ({handleSend}) => {
     reset()
     
     try {
-      console.log('⏳ Versturen bezig...');
+      // console.log('⏳ Sending...');
       
       await handleSend(data.prompt)
 
-      console.log('✅ Verstuurd:', data.prompt);
+      // console.log('✅ Sent:', data.prompt);
 
     } catch (err) {
       console.error('🚨 Fout bij verzenden:', err);

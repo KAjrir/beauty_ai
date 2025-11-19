@@ -7,11 +7,11 @@ const ChatPage = async ({ params }) => {
     const session = await auth()
     if(!session) redirect("/")
 
-    const { chatId } = await params 
+    const { chatId } = await params
     
     const response = await getChat(chatId, session.user.id)
     
-    console.log("MESSAGES:", response)
+    // console.log("MESSAGES:", response)
     
     return (
         <ChatUI

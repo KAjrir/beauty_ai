@@ -181,7 +181,7 @@ export async function POST (req) {
                     userId: user.id
                 }
             })
-            console.log(validateChat)
+            console.log("Validation of chat: ", validateChat)
 
             if (!validateChat) {
                 return NextResponse.json(
@@ -189,7 +189,7 @@ export async function POST (req) {
                         { status: 404 }
                     );
             }
-        }else{
+        } else{
             try {
 
                 
@@ -204,7 +204,7 @@ export async function POST (req) {
                     try{
                         const res = await client.responses.create({
                             model: "gpt-5",
-                            input: `Analyze the text and think of an appropiate title. It shouldn't be too long maximum of 50 characters: ${messages[messages.length - 1].content}`
+                            input: `Analyze the text and think of an appropiate title. It shouldn't be too long maximum of 35 characters: ${messages[messages.length - 1].content}`
     
                         });
     

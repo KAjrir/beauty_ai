@@ -4,7 +4,7 @@ import AuthForm from "@/components/AuthForm"
 import { signInWithCredentials } from "@/lib/actions/action";
 import { signInSchema } from "@/lib/validations";
 
-const page = () => {
+const Page = () => {
 
   
   return (
@@ -24,4 +24,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

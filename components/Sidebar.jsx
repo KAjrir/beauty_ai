@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 
 export default function Sidebar({ chats, isOpen, isDesktop, setIsOpen, onToggle, onClose }) {
   const pathName = usePathname()
-  console.log(pathName)
+  
   return (
     <aside
       className={`bg-purple-950 border-r border-purple-800 text-white transition-all duration-300 flex flex-col
@@ -93,7 +93,7 @@ function Chat({id, label, isOpen, isDesktop, setIsOpen, currentChat}) {
           isOpen ? "justify-start" : "justify-center"
         }`}
       >
-        {isOpen && <span>{label}</span>}
+        {isOpen && <span className="text-nowrap overflow-x-hidden text-ellipsis">{label}</span>}
       </button>
     </Link>
   );

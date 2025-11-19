@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 const MessageContainer = ({messages, result, isLoading, messageRef}) => {
     const chatRef = useRef(null)
     const [ready, setReady] = useState(false)
-    console.log(messages)
+    // console.log(messages)
 
     useEffect(() => {
         if(messageRef.current) {
