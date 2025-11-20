@@ -8,15 +8,18 @@ import OpenAI from "openai";
 import { auth } from '@/auth';
 import { getUserWithFeatures } from '@/lib/actions/action';
 import { systemInstructions } from '@/constants';
-import { DIRTY } from 'zod';
+
 const client = new OpenAI()
 
+// Deze functie even uitzetten zodat mogelijke werkgevers deze site kunnen bezoeken en beoordelen
+// als je de functie weer geldig wil maken dan de eerste if statement veranderen in 
+// if (plan !== 'free') return false;
 
 function limitedCounts (plan = "free", cookie, session){
-    if (plan !== 'free') return false;
+    if (!plan) return false;
     let  MAX_PROMPTS;
 
-    MAX_PROMPTS = session ? 15 : 3  
+    MAX_PROMPTS = session ? 30 : 10  
 
     const countCookie = cookie.get('prompt_count');
     const startCookie = cookie.get('prompt_start');
@@ -298,14 +301,15 @@ export async function POST (req) {
                             type: "token",
                             value: token.delta
                         }) + "\n" )
-                            
                     )
+                    continue
                 }
                 
+                console.log(JSON.stringify(token, null, 2))
                 if(token.type === "response.completed"){
-                    console.log(JSON.stringify(token, null, 2))
 
-                    const finalText = token.response.output[0].content[0].text;
+
+                    const finalText = token.response?.output[1].content[0].text || token.response.output[0].content[0].text;
 
                     const assistantMessage = await prisma.chatMessage.create({
                         data: {

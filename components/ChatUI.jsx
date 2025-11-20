@@ -46,11 +46,11 @@ const ChatUI = ({chatMessages, error}) => {
     setMessages(updatedMessages)
     setResult('');
 
-    setIsLoading(true)
-
+    
     let res
     
     try {
+      setIsLoading(true)
       res = await fetch('/api/prompt', {
         method: 'POST',
         headers: {
@@ -63,8 +63,6 @@ const ChatUI = ({chatMessages, error}) => {
       });
     } catch (err) {
         toast.error(err.error)
-    } finally{
-      setIsLoading(false)
     }
     
     if (!res.ok) {
@@ -117,6 +115,8 @@ const ChatUI = ({chatMessages, error}) => {
               messageRef.current.style.height = 15+"vw"
               window.scrollBy(0, 200)
             }
+            setIsLoading(false)
+
             continue;
           }
 
