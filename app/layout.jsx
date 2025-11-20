@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { ToastProvider } from "@/components/ui/toast-provider";
 
 import localFont from 'next/font/local';
+import { SidebarProvider } from "@/components/providers/SidebarProvider";
 
 export const glacial = localFont({
   src: [
@@ -38,7 +39,9 @@ export default async function RootLayout({ children }) {
           className={`${glacial.className} [background-image:var(--gradient-main)] text-white antialiased flex flex-col h-svh`}
         >
           <ToastProvider>
-            {children}
+            <SidebarProvider>
+              {children}
+            </SidebarProvider>
           </ToastProvider>
         </body>
       </SessionProvider>

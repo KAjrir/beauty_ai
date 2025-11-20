@@ -4,9 +4,10 @@ import { X, ChevronLeft, ChevronRight, MessageSquare, Search } from "lucide-reac
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useSidebar } from "./providers/SidebarProvider";
 
 export default function SidebarClient({ chats }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const {isSidebarOpen, setIsSidebarOpen} = useSidebar()
   const [isDesktop, setIsDesktop] = useState(false);
   const pathName = usePathname();
 
@@ -14,7 +15,7 @@ export default function SidebarClient({ chats }) {
     const handleResize = () => {
       const DESKTOP = window.innerWidth >= 640;
       setIsDesktop(DESKTOP);
-      setIsOpen(DESKTOP);
+      setIsSidebarOpen(DESKTOP);
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -25,22 +26,22 @@ export default function SidebarClient({ chats }) {
     <aside
       className={`bg-purple-950 border-r border-purple-800 text-white transition-all duration-300 flex flex-col
         ${isDesktop
-          ? isOpen
+          ? isSidebarOpen
             ? "sticky top-24 w-64 h-[calc(100vh-6rem)]"
             : "sticky top-24 w-16 h-[calc(100vh-6rem)]"
-          : isOpen
+          : isSidebarOpen
             ? "fixed top-0 bottom-0 left-0 right-25 z-60"
             : "hidden"}`}
     >
       <div className="flex items-center justify-between p-4 border-b border-purple-800">
-        {isOpen && <h2 className="text-lg font-semibold">Your Chats</h2>}
+        {isSidebarOpen && <h2 className="text-lg font-semibold">Your Chats</h2>}
 
         {isDesktop ? (
-          <button onClick={() => setIsOpen((prev) => !prev)} className="p-1 rounded hover:bg-purple-800 cursor-pointer">
-            {isOpen ? <ChevronLeft size={22} /> : <ChevronRight size={22} />}
+          <button onClick={() => setIsSidebarOpen((prev) => !prev)} className="p-1 rounded hover:bg-purple-800 cursor-pointer">
+            {isSidebarOpen ? <ChevronLeft size={22} /> : <ChevronRight size={22} />}
           </button>
         ) : (
-          <button onClick={() => setIsOpen(false)}>
+          <button onClick={() => setIsSidebarOpen(false)}>
             <X size={24} />
           </button>
         )}
@@ -48,10 +49,10 @@ export default function SidebarClient({ chats }) {
 
       <nav className="flex-1 p-3 space-y-3 overflow-auto">
         <Link href={'/'}>
-          <SidebarItem icon={<MessageSquare size={22} />} label="New Chat" isOpen={isOpen} />
+          <SidebarItem icon={<MessageSquare size={22} />} label="New Chat" isSidebarOpen={isSidebarOpen} />
         </Link>
 
-        <SidebarItem icon={<Search size={22} />} label="Search" isOpen={isOpen} />
+        <SidebarItem icon={<Search size={22} />} label="Search" isSidebarOpen={isSidebarOpen} />
         <hr />
         <nav className="flex-1 space-y-3">
           {chats && 
@@ -62,9 +63,9 @@ export default function SidebarClient({ chats }) {
                 key={chat.id}
                 id={chat.id} 
                 label={chat.title}
-                isOpen={isOpen}
+                isSidebarOpen={isSidebarOpen}
                 isDesktop={isDesktop}
-                setIsOpen={setIsOpen}
+                setIsSidebarOpen={setIsSidebarOpen}
                 currentChat={currentChat}
               />
               )
@@ -76,20 +77,20 @@ export default function SidebarClient({ chats }) {
   );
 }
 
-function SidebarItem({ icon=null, label, isOpen }) {
+function SidebarItem({ icon=null, label, isSidebarOpen }) {
   return (
     <button
       className={`flex items-center gap-3 w-full hover:bg-purple-800 active:bg-purple-900 cursor-pointer rounded p-2 transition-all ${
-        isOpen ? "justify-start" : "justify-center"
+        isSidebarOpen ? "justify-start" : "justify-center"
       }`}
     >
       {icon}
-      {isOpen && <span>{label}</span>}
+      {isSidebarOpen && <span>{label}</span>}
     </button>
   );
 }
 
-function Chat({id, label, isOpen, isDesktop, setIsOpen, currentChat}) {
+function Chat({id, label, isSidebarOpen, isDesktop, setIsSidebarOpen, currentChat}) {
   return (
     <Link key={id} href={`/chat/${id}`}
       onNavigate={(e) => {
@@ -97,17 +98,17 @@ function Chat({id, label, isOpen, isDesktop, setIsOpen, currentChat}) {
           e.preventDefault()
           return
         }
-        if(!isDesktop && isOpen) {
-          setIsOpen(false)
+        if(!isDesktop && isSidebarOpen) {
+          setIsSidebarOpen(false)
         }
       }}
     >
       <button
         className={`flex items-center gap-3 w-full hover:bg-purple-800 active:bg-purple-900 cursor-pointer rounded p-2 transition-all ${
-          isOpen ? "justify-start" : "justify-center"
+          isSidebarOpen ? "justify-start" : "justify-center"
         }`}
       >
-        {isOpen && <span className="text-nowrap overflow-x-hidden text-ellipsis">{label}</span>}
+        {isSidebarOpen && <span className="text-nowrap overflow-x-hidden text-ellipsis">{label}</span>}
       </button>
     </Link>
   );

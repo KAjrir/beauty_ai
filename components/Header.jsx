@@ -7,11 +7,13 @@ import { navigationLinks } from "@/constants/index";
 import { handleSignOut } from "@/lib/actions/action";
 import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useSidebar } from "./providers/SidebarProvider";
 import PlanContainer from "./PlanContainer";
 
 export default function Header({ user, plans }) {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const [openPlancontainer, setOpenPlancontainer] = useState(false);
+  const { setIsSidebarOpen } = useSidebar();
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export default function Header({ user, plans }) {
         {/* Hamburger alleen op mobiel */}
         {!isDesktop && user && (
           <button
-            onClick={() => setOpen(true)}
+            onClick={() => setIsSidebarOpen(true)}
             className="bg-purple-800 p-2 rounded-md hover:bg-purple-700 transition"
           >
             <Menu size={20} />
@@ -82,7 +84,7 @@ export default function Header({ user, plans }) {
 
         {/* Avatar */}
         {user && (
-        <button onClick={() => setOpen(true)} className="flex items-center">
+        <button onClick={() => setOpenPlancontainer(true)} className="flex items-center">
           <Avatar className="cursor-pointer h-9 w-9">
             <AvatarImage src="https://github.com/shadcn.png" />
             <AvatarFallback>CN</AvatarFallback>
@@ -93,8 +95,8 @@ export default function Header({ user, plans }) {
         {/* Plancontainer */}
         <PlanContainer
           plans={plans}
-          open={open}
-          onClose={() => setOpen(false)}
+          open={openPlancontainer}
+          onClose={() => setOpenPlancontainer(false)}
           user={user}
         />
       </div>
