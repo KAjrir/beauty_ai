@@ -206,9 +206,8 @@ export async function POST (req) {
                 setImmediate(async () => {
                     try{
                         const res = await client.responses.create({
-                            model: "gpt-5",
+                            model: "gpt-5-mini",
                             input: `Analyze the text and think of an appropiate title. It shouldn't be too long maximum of 35 characters: ${messages[messages.length - 1].content}`
-    
                         });
     
                         await prisma.chat.update({
