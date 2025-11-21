@@ -12,10 +12,10 @@ import { systemInstructions } from '@/constants';
 const client = new OpenAI()
 
 // Deze functie even uitzetten zodat mogelijke werkgevers deze site kunnen bezoeken en beoordelen
-// als je de functie weer geldig wil maken dan de eerste if statement veranderen in 
-// if (plan !== 'free') return false;
+// als je de functie weer geldig wil maken dan return statement weghalen
 
 function limitedCounts (plan = "free", cookie, session){
+    return
     if (!plan) return false;
     let  MAX_PROMPTS;
 
@@ -309,7 +309,7 @@ export async function POST (req) {
                 if(token.type === "response.completed"){
 
 
-                    const finalText = token.response?.output[1].content[0].text || token.response.output[0].content[0].text;
+                    const finalText = token.response?.output[1]?.content[0].text || token.response.output[0].content[0].text;
 
                     const assistantMessage = await prisma.chatMessage.create({
                         data: {

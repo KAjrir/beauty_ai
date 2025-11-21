@@ -63,6 +63,7 @@ const ChatUI = ({chatMessages, error}) => {
       });
     } catch (err) {
         toast.error(err.error)
+        setIsLoading(false)
     }
     
     if (!res.ok) {
@@ -113,7 +114,7 @@ const ChatUI = ({chatMessages, error}) => {
 
             if (messageRef.current) {
               messageRef.current.style.height = 15+"vw"
-              window.scrollBy(0, 200)
+              window.scrollBy(0, 250)
             }
             setIsLoading(false)
 
@@ -132,6 +133,11 @@ const ChatUI = ({chatMessages, error}) => {
           }
 
           if (event.type === "token"){
+            setTimeout(() => {
+              if (messageRef.current) {
+                messageRef.current.style.height = 0
+              }
+            }, 1500)
             setResult(prev => prev + event.value)
             continue
           }
@@ -150,9 +156,6 @@ const ChatUI = ({chatMessages, error}) => {
 
             setResult("");
 
-            if (messageRef.current) {
-              messageRef.current.style.height = 0
-            }
             setChangeRouter(true)
             return;
           }
