@@ -1,3 +1,8 @@
+export const config = {
+  runtime: "nodejs",
+  maxDuration: 30,
+};
+
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers';
 import { prisma } from '@/database/prisma/prisma';
