@@ -1,7 +1,4 @@
-export const config = {
-  runtime: "nodejs",
-  maxDuration: 30,
-};
+export const maxDuration = 60;
 
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers';
@@ -221,6 +218,8 @@ export async function POST (req) {
                             model: "gpt-5",
                             input: `Analyze the text and think of an appropiate title. It shouldn't be too long maximum of 35 characters: ${messages[messages.length - 1].content}. Remember you have to choose`
                         });
+
+                        console.log(res)
     
                         await prisma.chat.update({
                             where: { id: chatId },
