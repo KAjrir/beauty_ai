@@ -125,11 +125,11 @@ export async function POST (req) {
             async start(controller) {
 
                 controller.enqueue(
-                encoder.encode(JSON.stringify({
-                    type: "init",
-                    chatId,
-                }) + "\n")
-            );
+                    encoder.encode(JSON.stringify({
+                        type: "init",
+                        chatId,
+                    }) + "\n")
+                );
 
                 controller.enqueue(
                     encoder.encode(JSON.stringify({
