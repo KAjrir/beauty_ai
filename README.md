@@ -62,12 +62,12 @@ This is a **demonstration project**, not a product.
 
 | Layer | Technology |
 |-------|------------|
-| **Framework** | Next.js 15 (App Router) |
+| **Framework** | Next.js 16 (App Router) |
 | **Styling** | Tailwind CSS, custom UI components |
 | **Backend** | Server Actions |
 | **AI** | OpenAI API |
 | **Database** | Prisma ORM + PostgreSQL |
-| **Auth** | Auth.js |
+| **Auth** | Auth.js (Google + email/password) |
 | **Payments** | Stripe Subscriptions |
 | **Deployment** | Vercel |
 
@@ -82,3 +82,37 @@ If you'd like to run it locally:
 ```bash
 git clone https://github.com/KAjrir/beauty_ai.git
 cd beauty_ai
+```
+
+### 2. Install dependencies
+```bash
+npm install
+```
+This also runs `prisma generate`.
+
+### 3. Configure environment variables
+Copy the example file and fill in your own keys:
+```bash
+cp .env.example .env
+```
+
+| Variable | Used for |
+|---|---|
+| `OPENAI_API_KEY` | AI chat responses |
+| `AUTH_SECRET` | Auth.js session encryption (`npx auth secret`) |
+| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google login |
+| `DATABASE_URL` | PostgreSQL connection string (e.g. Neon) |
+| `STRIPE_SECRET_KEY` | Stripe Checkout and subscriptions |
+| `LIVE_SECRET_WEBHOOK_KEY` | Verifying Stripe webhook signatures |
+| `DOMAIN_NAME` | Base URL for Stripe redirects (e.g. `http://localhost:3000`) |
+
+### 4. Set up the database
+```bash
+npx prisma migrate deploy
+```
+
+### 5. Run the development server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000).
